@@ -19,8 +19,8 @@ public class Product {
     private String name;
     @Column(nullable = false,precision = 15,scale=2)
     private BigDecimal currentBalance;
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "investors_id",nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "investor_id")
     private Investor investor;
 
     public ProductType getType() {

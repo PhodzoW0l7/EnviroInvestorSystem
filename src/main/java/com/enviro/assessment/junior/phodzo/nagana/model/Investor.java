@@ -21,8 +21,8 @@ public class Investor {
     @Column(nullable = false)
     private String email;
 //    This annotation defines a one-to-many relationship between two database entities
-    @OneToMany(mappedBy = "investor",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<Product> products;
+@OneToMany(mappedBy = "investor", cascade = CascadeType.ALL)
+private List<Product> products;
 
     public Long getId() {
         return id;

@@ -12,8 +12,8 @@ public class WithdrawalNotice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name="product_id",nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
     @Column(nullable = false,precision = 15,scale=2)
     private BigDecimal withdrawalAmount;
