@@ -3,6 +3,7 @@ package com.enviro.assessment.junior.phodzo.nagana.service;
 import com.enviro.assessment.junior.phodzo.nagana.dto.InvestorDto;
 import com.enviro.assessment.junior.phodzo.nagana.dto.ProductResponseDto;
 import com.enviro.assessment.junior.phodzo.nagana.dto.WithdrawalRequestDto;
+import com.enviro.assessment.junior.phodzo.nagana.exception.BusinessLogicValidationException;
 import com.enviro.assessment.junior.phodzo.nagana.model.Investor;
 import com.enviro.assessment.junior.phodzo.nagana.model.Product;
 import com.enviro.assessment.junior.phodzo.nagana.model.ProductType;
@@ -64,16 +65,16 @@ public class WithdrawalService {
         if(product.getType()== ProductType.RETIREMENT){
             int age=Period.between(investor.getDateOfBirth(),LocalDate.now()).getYears();
             if (age<=65){
-                throw new RuntimeException("Investor age is "+age+". Retirement fund withdrawal restricted for age <= 65.");
+                throw new BusinessLogicValidationException("Investor age is "+age+". Retirement fund withdrawal restricted for age <= 65.");
             }
         }
         if(requestedAmount.compareTo(currentBalance)>0){
-            throw new RuntimeException("Insufficient funds. Requested: R"+requestedAmount+", Available Balance: R"+currentBalance);
+            throw new BusinessLogicValidationException("Insufficient funds. Requested: R"+requestedAmount+", Available Balance: R"+currentBalance);
         }
         //Implementation of how the maximum amount of to be withdrawn can only be 90% of the account balance
         BigDecimal maxAllowedWithdrawal=currentBalance.multiply(new BigDecimal("0.90"));
         if(requestedAmount.compareTo(maxAllowedWithdrawal)>0){
-            throw new RuntimeException("Withdrawal amount exceeds the maximum allowed withdrawal amount of 90% of the account");
+            throw new BusinessLogicValidationException("Withdrawal amount exceeds the maximum allowed withdrawal amount of 90% of the account");
         }
         //saving to the Entity instance(product)
         product.setCurrentBalance(currentBalance.subtract(requestedAmount));
