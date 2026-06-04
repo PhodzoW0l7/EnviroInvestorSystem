@@ -11,8 +11,14 @@ import com.enviro.assessment.junior.phodzo.nagana.repository.InvestorRepository;
 import com.enviro.assessment.junior.phodzo.nagana.repository.ProductRepository;
 import com.enviro.assessment.junior.phodzo.nagana.repository.WithdrawalNoticeRepository;
 import jakarta.transaction.Transactional;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -81,4 +87,37 @@ public class WithdrawalService {
 
         return withdrawalNoticeRepository.save(notice);
     }
+
+    public ByteArrayInputStream exportWithdrawalHistoryCsv(Long productId, String statusFilter){
+        List<WithdrawalNotice> notices=withdrawalNoticeRepository.findByProductId(productId);
+        if(statusFilter !=null && !statusFilter.trim().isEmpty()){
+            notices=notices.stream().filter(note-> note.getStatus().equalsIgnoreCase(statusFilter.trim()))
+                    .collect(Collectors.toList());
+        }
+        //Creating a new csv file called format with the below tables
+        CSVFormat format = CSVFormat.DEFAULT.builder()
+                .setHeader("Notice ID", "Product ID", "Product Name", "Withdrawal Amount (ZAR)", "Request Date", "Status")
+                .build();
+        //Creating a new bytearrayoutstream object
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+             CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
+            for (WithdrawalNotice notice : notices) {
+                csvPrinter.printRecord(
+                        notice.getId(),
+                        notice.getProduct().getId(),
+                        notice.getProduct().getName(),
+                        notice.getWithdrawalAmount(),
+                        notice.getRequestDate().toString(),
+                        notice.getStatus()
+                );
+            }
+
+            csvPrinter.flush();
+            return new ByteArrayInputStream(out.toByteArray());
+
+        } catch (IOException e) {
+            throw new RuntimeException("Fail to import data to CSV file: " + e.getMessage());
+        }
+    }
+
 }
