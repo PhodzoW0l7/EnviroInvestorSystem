@@ -111,7 +111,6 @@ public class WithdrawalService {
                         notice.getStatus()
                 );
             }
-
             csvPrinter.flush();
             return new ByteArrayInputStream(out.toByteArray());
 
