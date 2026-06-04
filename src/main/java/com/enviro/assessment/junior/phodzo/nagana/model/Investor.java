@@ -22,7 +22,7 @@ public class Investor {
     private String email;
 //    This annotation defines a one-to-many relationship between two database entities
     @OneToMany(mappedBy = "investor",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<products> products;
+    private List<Product> products;
 
     public Long getId() {
         return id;
@@ -64,11 +64,11 @@ public class Investor {
         this.email = email;
     }
 
-    public List<products> getProducts() {
+    public List<Product> getProducts() {
         return products;
     }
 
-    public void setProducts(List<products> products) {
+    public void setProducts(List<Product> products) {
         this.products = products;
     }
 
