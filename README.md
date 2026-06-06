@@ -1,4 +1,5 @@
 # InvestorSystemFrontend
+<img width="1863" height="991" alt="image" src="https://github.com/user-attachments/assets/bb2b75d8-14b1-4ae6-a9d0-47aae6551e81" />
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.0.
 
