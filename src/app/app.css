@@ -99,7 +99,7 @@
     }
 
     .nav-link mat-icon { font-size: 18px; height: 18px; width: 18px; }
-    .nav-link:hover { color: #4e73df; background: rgba(78,115,223,0.08); }
+    .nav-link:hover { color: #4edf8b; background: rgba(78,115,223,0.08); }
     .nav-link.active { color: white !important; background: #4edf66; }
     .nav-link-active-section { color: #4edf66 !important; background: rgba(78,115,223,0.08); }
 
