@@ -60,6 +60,21 @@ public class DataInitializer implements org.springframework.boot.CommandLineRunn
         johnRetirement.setInvestor(seniorInvestor);
         productRepository.save(johnRetirement);
 
-        System.out.println(">>> Enviro350 Database Initializer complete: Mock portfolios populated successfully! <<<");
+        // 3. Middle-aged investor with only savings (tests savings withdrawal freely)
+        Investor middleInvestor = new Investor();
+        middleInvestor.setName("Priya");
+        middleInvestor.setSurname("Naidoo");
+        middleInvestor.setEmail("priya.naidoo@enviro.co.za");
+        middleInvestor.setDateOfBirth(LocalDate.of(1980, 9, 22)); // Age: ~45
+        investorRepository.save(middleInvestor);
+
+        Product priyaSavings = new Product();
+        priyaSavings.setName("Unit Trust Fund");
+        priyaSavings.setType(ProductType.SAVINGS);
+        priyaSavings.setCurrentBalance(new BigDecimal("250000.00"));
+        priyaSavings.setInvestor(middleInvestor);
+        productRepository.save(priyaSavings);
+
+        System.out.println(">>> Enviro365 Database Initializer complete: Mock portfolios populated successfully! <<<");
     }
 }

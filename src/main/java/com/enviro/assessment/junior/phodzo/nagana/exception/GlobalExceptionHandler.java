@@ -6,27 +6,42 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-//serialized error responses as Json
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessLogicValidationException.class)
-    public ResponseEntity<Map<String,String>> handleBusinessRulesExceptions(BusinessLogicValidationException exception){
-        Map<String, String> error=new HashMap<>();
-        //wraps the error message in a key value pair JSON object
-        error.put("error",exception.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Map<String, Object>> handleBusinessLogic(BusinessLogicValidationException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(RuntimeException ex) {
+        String msg = ex.getMessage() != null ? ex.getMessage() : "Unexpected error";
+        HttpStatus status = msg.toLowerCase().contains("not found")
+                ? HttpStatus.NOT_FOUND
+                : HttpStatus.INTERNAL_SERVER_ERROR;
+        return buildResponse(status, msg);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleInputValidation(MethodArgumentNotValidException exception){
-        Map<String, String> errors=new HashMap<>();
-        //inspects all the validation failures
-        exception.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(),error.getDefaultMessage()));
+    public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException ex) {
+        String errors = ex.getBindingResult().getFieldErrors()
+                .stream()
+                .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+        return buildResponse(HttpStatus.BAD_REQUEST, errors);
+    }
 
-        return new ResponseEntity<>(errors,HttpStatus.BAD_REQUEST);
-
+    private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now().toString());
+        body.put("status", status.value());
+        body.put("error", message);
+        return ResponseEntity.status(status).body(body);
     }
 }

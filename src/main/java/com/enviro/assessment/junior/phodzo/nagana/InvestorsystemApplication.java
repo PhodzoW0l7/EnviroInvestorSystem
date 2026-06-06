@@ -8,6 +8,7 @@ public class InvestorsystemApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(InvestorsystemApplication.class, args);
+		//To follow my working progress, please visit my GitHub repository: https://github.com/PhodzoW0l7/InvestorSystem
 	}
 
 }

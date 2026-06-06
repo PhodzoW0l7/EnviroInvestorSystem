@@ -4,46 +4,43 @@ import java.util.List;
 
 public class InvestorDto {
 
-    private Long investorId;
-    private String fullName;
-    private int age;
-    private List<ProductResponseDto> products;
+        private Long investorId;
+        private String name;
+        private String surname;
+        private String email;
+        private String fullName;
+        private int age;
+        private List<ProductResponseDto> products;
 
-    public InvestorDto(Long investorId,String fullName,int age,List<ProductResponseDto> products){
-        this.investorId=investorId;
-        this.fullName=fullName;
-        this.age=age;
-        this.products=products;
-    }
-    public Long getInvestorId() {
-        return investorId;
-    }
+        public InvestorDto(Long investorId, String name, String surname,
+                           String email, int age, List<ProductResponseDto> products) {
+            this.investorId = investorId;
+            this.name = name;
+            this.surname = surname;
+            this.email = email;
+            this.fullName = name + " " + surname;
+            this.age = age;
+            this.products = products;
+        }
 
-    public void setInvestorId(Long investorId) {
-        this.investorId = investorId;
-    }
+        public Long getInvestorId() { return investorId; }
+        public void setInvestorId(Long investorId) { this.investorId = investorId; }
 
-    public String getFullName() {
-        return fullName;
-    }
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
+        public String getSurname() { return surname; }
+        public void setSurname(String surname) { this.surname = surname; }
 
-    public int getAge() {
-        return age;
-    }
+        public String getEmail() { return email; }
+        public void setEmail(String email) { this.email = email; }
 
-    public void setAge(int age) {
-        this.age = age;
-    }
+        public String getFullName() { return fullName; }
+        public void setFullName(String fullName) { this.fullName = fullName; }
 
-    public List<ProductResponseDto> getProducts() {
-        return products;
-    }
+        public int getAge() { return age; }
+        public void setAge(int age) { this.age = age; }
 
-    public void setProducts(List<ProductResponseDto> products) {
-        this.products = products;
+        public List<ProductResponseDto> getProducts() { return products; }
+        public void setProducts(List<ProductResponseDto> products) { this.products = products; }
     }
-}
