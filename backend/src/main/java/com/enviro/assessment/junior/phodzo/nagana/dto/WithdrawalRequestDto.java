@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
+//This is an inbound dto
 public class WithdrawalRequestDto {
 
     @NotNull(message = "Product ID is mandatory")
@@ -27,6 +28,9 @@ public class WithdrawalRequestDto {
 
     public void setProductId(Long productId) {
         this.productId = productId;
+        //Instead of sending an entire entity over a network,
+        // the client only needs to send two specific pieces of data:
+        // the target product's ID and the cash amount.
     }
 
 }

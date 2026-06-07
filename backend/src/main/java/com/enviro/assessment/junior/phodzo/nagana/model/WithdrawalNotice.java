@@ -6,15 +6,19 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
+//Maps this class to a database table called withdrawal_notices
 @Table(name = "withdrawal_notices")
 public class WithdrawalNotice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    //this just means that there can be multiple withdrawal notices which belong to one product
     @ManyToOne
+    //it connects two db tables using its product_id
     @JoinColumn(name = "product_id")
     private Product product;
+    //Configures high-accuracy financial data in the database.
     @Column(nullable = false,precision = 15,scale=2)
     private BigDecimal withdrawalAmount;
     @Column(nullable = false)

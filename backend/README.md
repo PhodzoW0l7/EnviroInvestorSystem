@@ -1,4 +1,5 @@
 # Enviro365 Investments: Investor Withdrawal Automation System (InvestorSystem)
+<img width="1433" height="970" alt="image" src="https://github.com/user-attachments/assets/8253dc7e-f3d8-4339-bbf7-61ae6ed7f5c5" />
 
 A robust, production-ready Spring Boot REST API that automates the compliance validation, balance modification, and transactional logging of client withdrawal notices for **Enviro350 Investments**.
 

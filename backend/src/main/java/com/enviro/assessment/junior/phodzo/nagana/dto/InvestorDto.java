@@ -2,6 +2,7 @@ package com.enviro.assessment.junior.phodzo.nagana.dto;
 
 import java.util.List;
 
+//these are the classes which exposes data to the client
 public class InvestorDto {
 
         private Long investorId;

@@ -12,9 +12,15 @@ export class PortfolioService {
     return this.http.get<InvestorPortfolio>(`${this.apiUrl}/investors/${investorId}/portfolio`);
   }
 
-  createWithdrawal(request: WithdrawalRequest): Observable<any> {
-    return this.http.post(`${this.apiUrl}/withdrawals`, request);
-  }
+createWithdrawal(request: WithdrawalRequest): Observable<any> {
+  return this.http.post(`${this.apiUrl}/withdrawals`, request, {
+    responseType: 'text'
+  });
+}
+
+getWithdrawalHistory(productId: number): Observable<any[]> {
+  return this.http.get<any[]>(`${this.apiUrl}/products/${productId}/history`);
+}
 
   exportCsv(
     productId: number,

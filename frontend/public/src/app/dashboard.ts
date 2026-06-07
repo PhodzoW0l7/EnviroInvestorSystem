@@ -9,7 +9,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { PortfolioService } from './portfolio.service';
 import { ProductsListComponent } from './products-list';
 import { InvestorPortfolio, InvestorSummary, Product } from './portfolio';
+import { WithdrawalHistoryDialogComponent } from './withdrawal-history-dialog';
 import { WithdrawalDialogComponent } from './withdrawal-form';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -19,12 +21,10 @@ import { WithdrawalDialogComponent } from './withdrawal-form';
     MatDialogModule, MatSnackBarModule, MatTooltipModule, ProductsListComponent
   ],
   template: `
-
-    <!-- Top Navbar -->
     <nav class="navbar">
       <div class="navbar-brand">
         <mat-icon class="brand-icon">trending_up</mat-icon>
-        Enviro350 <span class="brand-thin">Investments</span>
+        Enviro365 <span class="brand-thin">Investments</span>
       </div>
       <div class="navbar-right" *ngIf="portfolio">
         <div class="nav-user">
@@ -64,7 +64,7 @@ import { WithdrawalDialogComponent } from './withdrawal-form';
         <div class="sidebar-spacer"></div>
         <div class="sidebar-footer">
           <mat-icon>info_outline</mat-icon>
-          Enviro350 v1.0
+          Enviro365 v1.0
         </div>
       </aside>
 
@@ -134,10 +134,11 @@ import { WithdrawalDialogComponent } from './withdrawal-form';
 
           <!-- Products table -->
           <app-products-list
-            [products]="portfolio.products"
-            (onWithdraw)="openWithdrawalDialog($event)"
-            (onExport)="downloadCsv($event)">
-          </app-products-list>
+  [products]="portfolio.products"
+  (onWithdraw)="openWithdrawalDialog($event)"
+  (onExport)="downloadCsv($event)"
+  (onHistory)="loadWithdrawalHistory($event)">
+</app-products-list>
 
         </ng-container>
       </main>
@@ -150,6 +151,7 @@ export class DashboardComponent implements OnInit {
   private dialog           = inject(MatDialog);
   private snackBar         = inject(MatSnackBar);
   private cdr              = inject(ChangeDetectorRef);
+
 
   portfolio?: InvestorPortfolio;
   loading = false;
@@ -172,42 +174,64 @@ export class DashboardComponent implements OnInit {
   }
 
   private loadPortfolio(id: number): void {
-    this.loading = true;
-    this.errorMessage = undefined;
-    this.portfolioService.getPortfolio(id).subscribe({
-      next: (data) => { this.portfolio = data; this.loading = false; this.cdr.detectChanges(); },
-      error: (err)  => {
+  this.loading = true;
+  this.errorMessage = undefined;
+  this.portfolioService.getPortfolio(id).subscribe({
+    next: (data) => {
+      this.portfolio = data;
+      this.loading = false;
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      if (err.status === 0) {
+        this.errorMessage = 'Unable to connect to the server.';
+      } else if (err.status === 404) {
+        this.errorMessage = `Investor with ID ${id} was not found.`;
+      } else if (err.status === 500) {
+        this.errorMessage = 'A server error occurred. Please try again later.';
+      } else {
         this.errorMessage = err?.error?.error || err?.message || 'Failed to load portfolio.';
-        this.loading = false;
-        this.cdr.detectChanges();
       }
-    });
-  }
+      this.loading = false;
+      this.cdr.detectChanges();
+    }
+  });
+}
 
-  openWithdrawalDialog(product: Product): void {
-    const dialogRef = this.dialog.open(WithdrawalDialogComponent, {
-      width: '420px',
-      panelClass: 'light-dialog',
-      data: { product }
-    });
+loadWithdrawalHistory(productId: number): void {
+  const productName = this.portfolio?.products.find(p => p.id === productId)?.name ?? 'Product';
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.portfolioService.createWithdrawal(result).subscribe({
-          next: () => {
-            this.snackBar.open('✓ Withdrawal notice submitted successfully', 'Close', {
-              duration: 4000, panelClass: 'snack-success'
-            });
-            this.loadPortfolio(this.selectedInvestorId);
-          },
-          error: (err) => {
-            const msg = err?.error?.error || 'Error processing withdrawal.';
-            this.snackBar.open('⚠ ' + msg, 'Close', { duration: 6000, panelClass: 'snack-error' });
-          }
-        });
-      }
-    });
-  }
+  this.portfolioService.getWithdrawalHistory(productId).subscribe({
+    next: (data) => {
+      this.dialog.open(WithdrawalHistoryDialogComponent, {
+        width: '700px',
+        panelClass: 'light-dialog',
+        data: { productName, history: data }
+      });
+    },
+    error: () => {
+      this.snackBar.open('Failed to load withdrawal history.', 'Close', { duration: 3000 });
+    }
+  });
+}
+
+openWithdrawalDialog(product: Product): void {
+  const dialogRef = this.dialog.open(WithdrawalDialogComponent, {
+    width: '420px',
+    panelClass: 'light-dialog',
+    data: { product }
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result === true) {                          // dialog signals success
+      this.snackBar.open('✓ Withdrawal notice submitted successfully', 'Close', {
+        duration: 4000,
+        panelClass: 'snack-success'
+      });
+      this.loadPortfolio(this.selectedInvestorId); // re-fetches and updates the UI
+    }
+  });
+}
 
   downloadCsv(productId: number): void {
     this.portfolioService.exportCsv(productId).subscribe({

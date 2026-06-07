@@ -29,6 +29,12 @@ import { Product } from './portfolio';
               <mat-icon>arrow_circle_up</mat-icon>
               Withdraw
             </button>
+            <button class="action-btn history-btn"
+                    matTooltip="View withdrawal history"
+                    (click)="onHistory.emit(product.id)">
+              <mat-icon>history</mat-icon>
+              History
+            </button>
             <button class="action-btn csv-btn"
                     matTooltip="Download CSV statement"
                     (click)="onExport.emit(product.id)">
@@ -47,7 +53,7 @@ import { Product } from './portfolio';
           </div>
         </div>
 
-        <!-- Balance bar (visual indicator: % of max balance across products) -->
+        <!-- Balance bar -->
         <div class="balance-bar-track">
           <div class="balance-bar-fill"
                [style.width]="getBalancePercent(product) + '%'"
@@ -68,7 +74,8 @@ import { Product } from './portfolio';
 export class ProductsListComponent {
   @Input() products: Product[] = [];
   @Output() onWithdraw = new EventEmitter<Product>();
-  @Output() onExport = new EventEmitter<number>();
+  @Output() onExport   = new EventEmitter<number>();
+  @Output() onHistory  = new EventEmitter<number>(); // ADD THIS
 
   getBalancePercent(product: Product): number {
     if (!this.products.length) return 0;
